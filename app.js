@@ -11,7 +11,7 @@ app.use(bodyParser.urlencoded({extended:true}));
 app.set('view engine', 'ejs'); //sets the view engine to be ejs
 app.use(express.static("public"));
 
-app.get("/", (re, res) => {
+app.get("/", (req, res) => {
 
     let day = date.getDay();   //user defined node module
     res.render('list', {
