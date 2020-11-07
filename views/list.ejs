@@ -4,13 +4,16 @@
     </div>
     
     <div class="box">
-        <%    for(var i=0; i<newItems.length; i++) { %>
-        <div class="item">
-            <input type="checkbox">
-            <p><%= newItems[i] %></p>
-        </div>
-        <% } %>
-           
+        <%  newItems.forEach((item) =>{ %>
+
+        <form action="/delete" method="POST"> 
+            <div class="item">
+                <!-- checked item's _id is assigned to value field to send it via POST request, onChange() is to give POST request without submit button -->
+                <input type="checkbox" name="checkbox" value="<%=item._id %>" onChange="this.form.submit()">  
+                <p><%= item.name  %></p>
+            </div>
+        </form>
+   <% }); %>
     
         <form class="item" action="/" method="post">
             <input type="text" name="item" placeholder="add item" autocomplete="off">
