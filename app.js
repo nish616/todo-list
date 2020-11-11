@@ -5,6 +5,7 @@ const {
     static
 } = require('express');
 const mongoose = require('mongoose');
+const _ = require('lodash');
 
 const app = express();
 
@@ -32,35 +33,83 @@ async function run() {
             }
         });
 
-        const Item = new mongoose.model("Item", itemsSchema);
-        
-
-        app.get("/", async (re, res) => {
-
-            const itemList = await Item.find();         //adding items from database to items
-
-            const day = date.getDay(); //user defined node module
-            res.render('list', {
-                kindOfDay: day,
-                newItems: itemList //first parameter is the name of the ejs file, second parameter is a javascript object.
-            });
+        const customListSchema = new mongoose.Schema({
+            name: String,
+            items: [itemsSchema]
         });
 
+        const Item = new mongoose.model("Item", itemsSchema);
+
+        const List = new mongoose.model("List", customListSchema);
+
+
+        app.get("/", async (re, res) => {
+            const items = await Item.find();
+            const day = date.getDay(); //user defined node module
+            res.render('list',{
+                kindOfDay : day,
+                newItems : items,
+                route : ""
+            });//fSirst parameter is the name of the ejs file, second parameter is a javascript object.
         
+        });
+
+
 
         app.post("/", async (req, res) => {
             const item = new Item({
-                name : req.body.item
+                name: req.body.item
             });
-            await item.save();              //saving new Item to database
+            await item.save(); //saving new Item to database
             res.redirect("/");
         });
 
-        app.post("/delete", async(req,res) => {
+        app.post("/delete", async (req, res) => {
             //console.log(req.body.checkbox);
-            await Item.deleteOne ({_id : req.body.checkbox});
+
+            await Item.deleteOne({
+                _id: req.body.checkbox
+            });
             res.redirect("/");
         });
+
+
+        app.get("/:customList", async (req, res) => {
+            const customListName = _.lowerCase(req.params.customList);
+
+            const listName = await List.findOne({
+                name: customListName
+            });
+
+            if (listName === null) {
+
+                const list = new List({
+                    name: customListName,
+                    items: []
+                });
+
+                list.save();
+            } else{
+                const itemList = await List.findOne({name : customListName}).select({"items" : 1, "_id" : 0});
+                
+                //console.log(itemList.items);
+                const day = date.getDay();
+                res.render('list', {
+                    kindOfDay: day,
+                    newItems: itemList.items,
+                    route :  customListName
+                });
+            }
+
+
+        });
+
+        app.post("/:customList", async (req,res) => {
+            const customListName = _.lowerCase(req.params.customList);
+            await List.updateOne({ name : customListName}, {$addToSet : {items : {name : req.body.item}}});
+            res.redirect("/"+customListName);
+        });
+
 
         app.get("/about", (req, res) => {
             res.render("about");
@@ -72,7 +121,7 @@ async function run() {
         await mongoose.connection.close();
     } finally {
         app.listen("3000", () => console.log("Listening at port 3000"));
-        
+
     }
 
 }

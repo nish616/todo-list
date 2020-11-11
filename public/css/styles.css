@@ -28,6 +28,7 @@ h1 {
   display: flex;
   align-items: center;
   border-bottom: 1px solid #F1F1F1;
+  padding-right: 10px;
 }
 
 .item:last-child {
@@ -56,16 +57,33 @@ form.item {
   margin-left: 20px;
 }
 
-button {
-  min-height: 50px;
-  width: 50px;
-  border-radius: 50%;
+.btn {
+  text-decoration: none;
+  border-radius: 8%;
   border-color: transparent;
   background-color: #A683E3;
   color: #fff;
-  font-size: 30px;
-  padding-bottom: 6px;
+  padding: 2% 3%;
+  font-size: 1.5rem;
   border-width: 0;
+  transition: 0.3s ease-in-out;
+}
+
+button.btn{
+  width:50px;
+  text-decoration: none;
+  border-radius: 30%;
+  border-color: transparent;
+  background-color: #A683E3;
+  color: #fff;
+  padding: 2% 3%;
+  font-size: 30px;
+  border-width: 0;
+  transition: 0.3s ease-in-out;
+}
+
+.btn:hover{
+  background-color: #7141c4;
 }
 
 input[type="text"] {
@@ -93,4 +111,7 @@ footer {
   color: white;
   color: rgba(0, 0, 0, 0.5);
   text-align: center;
+}
+a::after {
+  content: none;
 }
